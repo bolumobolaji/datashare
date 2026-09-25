@@ -1,0 +1,27 @@
+{
+  "_template": "PROPOSED — NOT YET APPROVED. Not in the IT Security approval sheet. A per-user permissions boundary capping pilot users to NPI-scoped actions even if a broader policy is attached. Raise with Compliance in Track B alongside the group-policy review. Committed here so the proposal is versioned, not applied.",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "NPIPilotBoundary",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket",
+        "glue:GetTable",
+        "glue:GetDatabase",
+        "lakeformation:GetDataAccess",
+        "datazone:GetAsset",
+        "datazone:CreateSubscriptionRequest"
+      ],
+      "Resource": [
+        "arn:aws:s3:::${BUCKET}",
+        "arn:aws:s3:::${BUCKET}/*",
+        "arn:aws:glue:${REGION}:${ACCOUNT_ID}:catalog",
+        "arn:aws:glue:${REGION}:${ACCOUNT_ID}:database/${GLUE_DATABASE}",
+        "arn:aws:glue:${REGION}:${ACCOUNT_ID}:table/${GLUE_DATABASE}/*"
+      ]
+    }
+  ]
+}

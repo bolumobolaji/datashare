@@ -1,0 +1,21 @@
+# Rendered output — regenerated from templates, never committed
+rendered/
+
+# Local overrides and anything that could hold a secret
+*.local.json
+*.local.*
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+credentials
+credentials.*
+
+# Tooling noise
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+.idea/

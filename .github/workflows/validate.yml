@@ -1,0 +1,36 @@
+# Fail loud on every PR: JSON valid, templates render, no secrets, main.json untouched.
+name: validate
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: JSON files parse
+        run: |
+          set -e
+          for f in $(git ls-files '*.json'); do python3 -c "import json,sys; json.load(open('$f'))" || { echo "INVALID JSON: $f"; exit 1; }; done
+          echo "OK: all JSON parses"
+
+      - name: Templates validate against variables (no render to disk)
+        run: python3 scripts/render.py --check
+
+      - name: No credential-like strings committed
+        run: python3 scripts/check_no_secrets.py
+
+      - name: main.json is immutable unless PR is labeled main-json-change
+        if: github.event_name == 'pull_request'
+        env:
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          if git diff --quiet origin/${{ github.base_ref }} -- main.json; then
+            echo "OK: main.json unchanged"; exit 0; fi
+          case ",$LABELS," in *,main-json-change,*) echo "main.json changed with approval label";;
+            *) echo "FAIL: main.json modified without the 'main-json-change' label. Edit variables.json instead."; exit 1;; esac

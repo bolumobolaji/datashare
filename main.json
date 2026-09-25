@@ -1,0 +1,63 @@
+{
+  "_readme": "IMMUTABLE. This file is the contract: which variables exist, which templates render, and the rules. Do not edit for environment changes — edit variables.json. CI fails any PR that modifies this file without the 'main-json-change' label.",
+  "schema_version": "1.0.0",
+  "project": "npi-datashare",
+  "track": "A",
+  "version_tag": "v1.0.0",
+
+  "rules": {
+    "main_json_immutable": true,
+    "secrets_by_reference_only": true,
+    "secrets_never_in_repo": [
+      "GitHub PAT (entered in the SMUS connection UI, stored by AWS)",
+      "database passwords",
+      "access keys",
+      "session tokens"
+    ],
+    "rendered_output_is_gitignored": true,
+    "unset_value_marker": "<",
+    "note": "Any variables.json value that begins with the unset marker is treated as not yet set; render fails on it. This is deliberate — a template must never render with a placeholder inside."
+  },
+
+  "variables": {
+    "ACCOUNT_ID":               { "description": "AWS account ID (12 digits). Not a secret, but not a template literal either.", "secret": false },
+    "REGION":                   { "description": "Region for all Track A resources. Domain, S3, Redshift, Glue must match.", "secret": false },
+    "DOMAIN_ID":                { "description": "SMUS / DataZone domain ID (dzd- prefix).", "secret": false },
+    "PROJECT_ID":               { "description": "Pilot project ID inside the domain.", "secret": false },
+    "PROJECT_ROLE_NAME":        { "description": "Auto-created project role: AmazonSageMakerStudio-<project-id>-ProjectRole.", "secret": false },
+    "BUCKET":                   { "description": "NPI snapshot test bucket.", "secret": false },
+    "SNAPSHOT_PREFIX":          { "description": "Prefix under the bucket for daily Parquet snapshots.", "secret": false },
+    "GLUE_DATABASE":            { "description": "Sandbox Glue catalog database for snapshot external tables.", "secret": false },
+    "ATHENA_WORKGROUP":         { "description": "Sandbox Athena workgroup.", "secret": false },
+    "REDSHIFT_WORKGROUP_ID":    { "description": "Pilot Redshift Serverless workgroup ID (datashare consumer).", "secret": false },
+    "PILOT_GROUP":              { "description": "IAM group driving S3 access and SMUS membership. Not usable as an LF principal.", "secret": false },
+    "ADMIN_USER":               { "description": "Provisioning / LF-admin identity.", "secret": false },
+    "TEST_USER":                { "description": "Working identity that proves the pilot access path.", "secret": false },
+    "EXEC_ROLE":                { "description": "Domain execution role (carries the project-user permissions boundary).", "secret": false },
+    "DOMAIN_MANAGE_ROLE":       { "description": "Domain management role created with the domain.", "secret": false },
+    "LF_TAG_DATA_CLASS":        { "description": "LF-Tag value for NPI classification.", "secret": false },
+    "LF_TAG_ENVIRONMENT":       { "description": "LF-Tag value for environment.", "secret": false },
+    "LF_TAG_SENSITIVITY":       { "description": "LF-Tag value for sensitivity.", "secret": false },
+    "GITHUB_REPO":              { "description": "org/repo for the SMUS GitHub connection.", "secret": false },
+    "GITHUB_BRANCH":            { "description": "Default branch.", "secret": false }
+  },
+
+  "secrets": {
+    "_rule": "Entries here name WHERE a secret lives, never WHAT it is. Allowed keys per entry: store, ref. No 'value' key is ever permitted.",
+    "github_pat":  { "store": "smus_connection", "ref": "Entered once in SMUS → Project → Settings → Connections → GitHub. Held by AWS, never in this repo." },
+    "redshift_db": { "store": "aws_secrets_manager", "ref": "npi-datashare/redshift/consumer" }
+  },
+
+  "templates": [
+    { "src": "policies/iam/SandboxDataSharePilotBucketAccess.template.json",           "out": "rendered/policies/iam/SandboxDataSharePilotBucketAccess.json" },
+    { "src": "policies/iam/NPI-Pilot-ProjectRole-ScopedPolicy.template.json",           "out": "rendered/policies/iam/NPI-Pilot-ProjectRole-ScopedPolicy.json" },
+    { "src": "policies/lakeformation/lf_tag_management_policy.template.json",           "out": "rendered/policies/lakeformation/lf_tag_management_policy.json" },
+    { "src": "policies/permission_boundaries/npi_pilot_user_boundary.PROPOSED.template.json", "out": "rendered/policies/permission_boundaries/npi_pilot_user_boundary.PROPOSED.json" }
+  ],
+
+  "controls": {
+    "VCS-1":    "All Track A code under GitHub version control via the SMUS connection, from V1 onward.",
+    "REPRO-1":  "Pipeline reproducible from a clean checkout — config-as-code, no hardcoded credentials.",
+    "REVIEW-1": "All changes land via small PRs with sign-off; no direct-to-main commits."
+  }
+}

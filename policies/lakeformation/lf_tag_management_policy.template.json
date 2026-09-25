@@ -1,0 +1,23 @@
+{
+  "_template": "Inline IAM policy for ${ADMIN_USER}. IAM alone is NOT sufficient — the identity must also be registered as Data Lake Administrator in the Lake Formation console.",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "LFTagManagement",
+      "Effect": "Allow",
+      "Action": [
+        "lakeformation:CreateLFTag",
+        "lakeformation:GetLFTag",
+        "lakeformation:UpdateLFTag",
+        "lakeformation:DeleteLFTag",
+        "lakeformation:ListLFTags",
+        "lakeformation:AddLFTagsToResource",
+        "lakeformation:RemoveLFTagsFromResource",
+        "lakeformation:GetResourceLFTags",
+        "lakeformation:SearchTablesByLFTags",
+        "lakeformation:SearchDatabasesByLFTags"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

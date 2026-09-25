@@ -1,0 +1,32 @@
+{
+  "_readme": "This is the ONLY file you edit to change an environment. Values must satisfy the contract in main.json. A value beginning with '<' means not yet set — render will refuse it. Never put a secret value here; see 'secrets' for the reference-only pattern.",
+  "environment": "sandbox-track-a",
+
+  "values": {
+    "ACCOUNT_ID":            "908027375495",
+    "REGION":                "us-east-2",
+    "DOMAIN_ID":             "dzd-ccfyu0e7eahzhl",
+    "PROJECT_ID":            "<set after pilot project is created>",
+    "PROJECT_ROLE_NAME":     "<AmazonSageMakerStudio-PROJECT_ID-ProjectRole — set after project creation>",
+    "BUCKET":                "sandbox-datashare-test-bucket-test",
+    "SNAPSHOT_PREFIX":       "orion_sandbox/snapshots",
+    "GLUE_DATABASE":         "orion_sandbox_snapshots",
+    "ATHENA_WORKGROUP":      "<set when the sandbox workgroup is created>",
+    "REDSHIFT_WORKGROUP_ID": "<set when the consumer workgroup is known>",
+    "PILOT_GROUP":           "sandbox_datashare_pilot_group",
+    "ADMIN_USER":            "iam-bolu-mobolaji",
+    "TEST_USER":             "iam-sandbox-bolu",
+    "EXEC_ROLE":             "AmazonSageMakerAdminIAMExecutionRole_1",
+    "DOMAIN_MANAGE_ROLE":    "AmazonSageMakerManageAccess-us-east-2-dzd-ccfyu0e7eahzhl",
+    "LF_TAG_DATA_CLASS":     "npi",
+    "LF_TAG_ENVIRONMENT":    "pilot",
+    "LF_TAG_SENSITIVITY":    "restricted",
+    "GITHUB_REPO":           "bolumobolaji/datashare",
+    "GITHUB_BRANCH":         "main"
+  },
+
+  "secrets": {
+    "github_pat":  { "store": "smus_connection",     "ref": "SMUS project connection: GitHub" },
+    "redshift_db": { "store": "aws_secrets_manager", "ref": "npi-datashare/redshift/consumer" }
+  }
+}

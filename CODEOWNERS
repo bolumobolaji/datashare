@@ -1,0 +1,6 @@
+# Every change needs a reviewer from Data Engineering. Access-control files also need the approver.
+*                              @bolu-mobolaji
+/main.json                     @bolu-mobolaji @kristen-bedore
+/policies/                     @bolu-mobolaji @kristen-bedore
+/lakeformation/                @bolu-mobolaji @kristen-bedore
+/.github/                      @bolu-mobolaji @kristen-bedore

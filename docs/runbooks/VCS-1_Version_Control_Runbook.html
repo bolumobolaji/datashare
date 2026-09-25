@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VCS-1 / REPRO-1 / REVIEW-1 — Version Control Runbook</title>
+<style>
+  :root{--steel:#01465A;--mandarin:#FF8500;--linen:#F5F4ED;--graphite:#171A1F;
+    --border:#01465A22;--steelsoft:#01465A0d;--muted:#5c6672;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--linen);color:var(--graphite);
+    font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;}
+  .page{max-width:8.5in;margin:18px auto;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.08);}
+  .band{background:var(--steel);color:var(--linen);padding:20px 34px;}
+  .kicker{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mandarin);font-weight:bold;margin:0 0 6px;}
+  h1{font-family:Georgia,"Times New Roman",serif;font-weight:bold;font-size:24px;margin:0;line-height:1.2;}
+  .sub{font-family:Georgia,serif;font-style:italic;font-size:14px;color:#F5F4EDcc;margin:6px 0 0;}
+  .body{padding:22px 34px 8px;}
+  h2{font-family:Georgia,serif;color:var(--steel);font-size:15px;font-weight:bold;margin:22px 0 8px;
+    padding-bottom:5px;border-bottom:2px solid var(--mandarin);}
+  h2:first-of-type{margin-top:4px;}
+  p{margin:0 0 10px;} ul,ol{margin:0 0 10px;padding-left:18px;} li{margin:0 0 5px;}
+  b,strong{color:var(--steel);}
+  code{font-family:"Courier New",monospace;font-size:11.5px;background:var(--steelsoft);
+    border:1px solid var(--border);border-radius:3px;padding:0 3px;color:var(--steel);}
+  pre{font-family:"Courier New",monospace;font-size:10.5px;line-height:1.4;background:var(--steelsoft);
+    border:1px solid var(--border);border-radius:6px;padding:9px 11px;margin:6px 0 8px;overflow-x:auto;white-space:pre;}
+  .meta{display:flex;flex-wrap:wrap;gap:6px 20px;margin:2px 0 14px;font-size:11.5px;color:var(--muted);}
+  .meta b{color:var(--steel);}
+  .callout{background:var(--steelsoft);border:1px solid var(--border);border-left:3px solid var(--mandarin);
+    border-radius:6px;padding:10px 12px;margin:4px 0 14px;font-size:12px;}
+  .warn{background:#FFF6EC;border:1px solid #FF850044;border-left:3px solid var(--mandarin);
+    border-radius:6px;padding:9px 12px;margin:6px 0 10px;font-size:12px;}
+  .warn b{color:#A85400;}
+  .step{display:grid;grid-template-columns:38px 1fr;gap:14px;margin:0 0 12px;}
+  .num{width:38px;height:38px;border-radius:50%;background:var(--steel);color:#fff;font-family:Georgia,serif;
+    font-weight:bold;font-size:17px;display:flex;align-items:center;justify-content:center;}
+  .card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--steel);border-radius:9px;padding:11px 14px;}
+  .card h3{margin:0 0 3px;font-size:14px;color:var(--steel);font-family:Georgia,serif;}
+  .card .controls{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mandarin);font-weight:bold;margin:0 0 7px;}
+  .card ul,.card ol{margin:3px 0 6px;}
+  .chk{font-size:12px;color:var(--steel);background:var(--steelsoft);border:1px solid var(--border);
+    border-radius:6px;padding:6px 9px;margin-top:6px;}
+  table{width:100%;border-collapse:collapse;margin:2px 0 12px;font-size:12px;}
+  th{background:var(--steel);color:#fff;text-align:left;font-weight:bold;padding:7px 10px;}
+  td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tr:nth-child(even) td{background:var(--linen);}
+  td.k{white-space:nowrap;font-weight:bold;color:var(--steel);}
+  .verify li{margin-bottom:6px;}
+  .foot{padding:14px 34px 22px;border-top:1px solid var(--border);margin-top:14px;}
+  .footline{font-size:10.5px;font-weight:bold;letter-spacing:.6px;color:var(--steel);text-transform:uppercase;margin-bottom:7px;}
+  .disc{font-size:8.5px;color:#171A1F99;line-height:1.5;margin:0 0 6px;}
+  .fontflag{font-size:8.5px;color:#171A1F99;line-height:1.5;margin:0;font-style:italic;}
+  @media print{html,body{background:#fff;}.page{box-shadow:none;margin:0;max-width:none;}@page{size:letter;margin:0.6in;}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="band">
+    <p class="kicker">OnePoint BFG Wealth Partners · Internal · Runbook</p>
+    <h1>VCS-1 / REPRO-1 / REVIEW-1 — Version Control Runbook</h1>
+    <p class="sub">All Track A code and access configuration under GitHub from V1, reproducible from a clean checkout, landed only by review</p>
+  </div>
+
+  <div class="body">
+    <div class="meta">
+      <span><b>Controls:</b> VCS-1 · REPRO-1 · REVIEW-1</span>
+      <span><b>Applies to:</b> Track A (V1) — every version thereafter</span>
+      <span><b>Repo:</b> <code>npi-datashare</code> (scaffold supplied)</span>
+      <span><b>Version:</b> 1.0 — 25 Sep 2026</span>
+    </div>
+
+    <h2>Purpose &amp; the one rule</h2>
+    <p>Every artifact that shapes how NPI is handled — view DDL, the Glue snapshot job, IAM and Lake Formation policies, blueprint state, bucket configuration — lives in GitHub from the first commit. Not because the code is precious, but because the <b>access-control paper trail</b> is: Arctic Wolf review and any Reg S-P question is answered by <code>git log</code>, not by memory.</p>
+    <div class="callout"><b>THE ONE RULE.</b> <code>main.json</code> is the immutable contract. <code>variables.json</code> is the only file edited to change an environment. Templates carry <code>${VAR}</code> placeholders and <b>never a literal</b> account ID, ARN, bucket, or region. Secrets are referenced by name, <b>never stored</b> — not in <code>variables.json</code>, not gitignored, not anywhere in the repo. CI enforces all of this and fails loud.</div>
+
+    <h2>The repo model</h2>
+    <table>
+      <tr><th style="width:170px;">File</th><th>Role</th><th style="width:130px;">Who edits</th></tr>
+      <tr><td class="k"><code>main.json</code></td><td>Contract: declared variables, template registry, rules, control mapping. Changing it requires a PR labeled <code>main-json-change</code> with a stated reason; CI blocks otherwise.</td><td>Rarely — Data Eng + reviewer</td></tr>
+      <tr><td class="k"><code>variables.json</code></td><td>Per-environment values. Non-secret only. A value starting with <code>&lt;</code> means "not yet known" and blocks rendering of any template that needs it — a placeholder never ships.</td><td>Builder, per PR</td></tr>
+      <tr><td class="k"><code>*.template.json</code></td><td>Policies with <code>${VAR}</code> placeholders. Logic lives here; values do not.</td><td>Builder, per PR</td></tr>
+      <tr><td class="k"><code>rendered/</code></td><td>Output of <code>render.py</code>. Gitignored. What you paste into the console or feed the CLI.</td><td>Generated</td></tr>
+      <tr><td class="k"><code>secrets</code> block</td><td>Each entry names <b>where</b> a secret lives (<code>store</code>, <code>ref</code>). A <code>value</code> key fails the render.</td><td>Builder — references only</td></tr>
+    </table>
+    <div class="warn"><b>Why not a secrets file at all — even gitignored.</b> A file that holds credentials on a laptop is a file that ends up in a commit, a screenshot, or a backup. The GitHub PAT is entered once in the SMUS connection UI and held by AWS. Redshift credentials live in AWS Secrets Manager and are reached <i>by name</i> from Glue and Redshift connections. The repo stores the name. That is the whole design.</div>
+
+    <h2>Steps</h2>
+
+    <div class="step"><div class="num">1</div><div class="card">
+      <h3>Enable S3 versioning first</h3>
+      <p class="controls">Prerequisite — data versioning and code versioning start together</p>
+      <ul><li><code>sandbox-datashare-test-bucket-test</code> → Properties → Bucket Versioning → <b>Enable</b>.</li>
+      <li>Do this <b>before</b> the V1 tag so <code>s3/bucket_config.md</code> is accurate from the first commit. Versioning is also the prerequisite for the DataZone subscription flow (PII-1, Layer 5).</li></ul>
+      <div class="chk"><b>Confirm:</b> versioning shows Enabled; recorded in <code>s3/bucket_config.md</code>.</div>
+    </div></div>
+
+    <div class="step"><div class="num">2</div><div class="card">
+      <h3>Initialize the repo from the scaffold and cut V1</h3>
+      <p class="controls">VCS-1</p>
+      <p>Unzip <code>npi-datashare-v1.0.0.zip</code>, then:</p>
+<pre>git init &amp;&amp; git add . &amp;&amp; git commit -m "Track A V1 — initial scaffold"
+git tag -a v1.0.0 -m "NPI Datashare Pilot V1 — initial release"
+git remote add origin https://github.com/&lt;org&gt;/npi-datashare.git
+git push -u origin main --tags</pre>
+      <ul><li>The tag anchors V1 permanently; every later change is traceable from it.</li>
+      <li>Fill <code>GITHUB_REPO</code> in <code>variables.json</code> in this first commit.</li></ul>
+      <div class="chk"><b>Confirm:</b> <code>main</code> exists on GitHub with tag <code>v1.0.0</code>; the <code>validate</code> workflow ran and passed.</div>
+    </div></div>
+
+    <div class="step"><div class="num">3</div><div class="card">
+      <h3>Protect <code>main</code> and route review</h3>
+      <p class="controls">REVIEW-1</p>
+      <ul><li>GitHub → Settings → Branches → add rule for <code>main</code>: <b>require pull request review</b>; <b>require the <code>validate</code> status check</b>; <b>block force-push</b>; <b>block deletion</b>.</li>
+      <li><code>CODEOWNERS</code> already routes every change to Data Engineering and requires the access approver on <code>main.json</code>, <code>policies/</code>, <code>lakeformation/</code>, <code>.github/</code>. Update the GitHub handles in that file.</li>
+      <li>The PR template forces the VCS-1 / REPRO-1 / REVIEW-1 checklist on every PR.</li></ul>
+      <div class="chk"><b>Confirm:</b> a direct push to <code>main</code> is rejected; a PR without review cannot merge.</div>
+    </div></div>
+
+    <div class="step"><div class="num">4</div><div class="card">
+      <h3>Connect SMUS to GitHub</h3>
+      <p class="controls">VCS-1 — code edited in SMUS lands in the repo</p>
+      <ol><li>DataZone portal → domain <code>dzd-ccfyu0e7eahzhl</code> → pilot project → Settings → <b>Connections</b> → Add connection → <b>GitHub</b>.</li>
+      <li>Repository <code>&lt;org&gt;/npi-datashare</code>, branch <code>main</code>.</li>
+      <li>Personal Access Token with <code>repo</code> scope — <b>entered here and nowhere else</b>. It is never committed, never in <code>variables.json</code>.</li>
+      <li>If Source control offers auto-commit on save, enable it — but changes still arrive on <code>main</code> only via PR because of the branch rule.</li></ol>
+      <div class="chk"><b>Confirm:</b> connection shows healthy; a test edit in SMUS appears as a commit/branch in GitHub.</div>
+    </div></div>
+
+    <div class="step"><div class="num">5</div><div class="card">
+      <h3>Commit the existing assets into their slots</h3>
+      <p class="controls">VCS-1 — nothing lives only in AWS</p>
+      <table>
+        <tr><th style="width:190px;">Asset</th><th>Source</th><th style="width:210px;">Repo path</th></tr>
+        <tr><td class="k">View DDL (5 views)</td><td>Redshift consumer; export prod view definitions for exact column lists</td><td><code>ddl/views_v1.sql</code></td></tr>
+        <tr><td class="k">Glue snapshot job</td><td>Glue → Jobs → job → Script tab → copy</td><td><code>glue/snapshot_job_v1.py</code></td></tr>
+        <tr><td class="k">Group bucket policy</td><td>IAM → group → inline policy JSON</td><td><code>policies/iam/…BucketAccess.template.json</code> (replace literals with <code>${VAR}</code>)</td></tr>
+        <tr><td class="k">Project-role scoped policy</td><td>IAM → project role → inline policy</td><td><code>policies/iam/…ScopedPolicy.template.json</code></td></tr>
+        <tr><td class="k">LF tags, grants, revocations</td><td>Lake Formation console</td><td><code>lakeformation/lf_tags_v1.md</code></td></tr>
+        <tr><td class="k">Blueprint state</td><td>DataZone → domain → Blueprints</td><td><code>datazone/blueprints_config.md</code></td></tr>
+        <tr><td class="k">Bucket config</td><td>S3 → Properties / Permissions</td><td><code>s3/bucket_config.md</code></td></tr>
+      </table>
+      <div class="warn"><b>When you paste an exported policy, strip the literals.</b> Replace the account ID, region, bucket, domain and project IDs with <code>${VAR}</code> before committing. <code>check_no_secrets.py</code> will not catch an account ID — that is on the reviewer, and it is in the PR template.</div>
+      <div class="chk"><b>Confirm:</b> each row above has a committed file; <code>python3 scripts/render.py --check</code> passes.</div>
+    </div></div>
+
+    <div class="step"><div class="num">6</div><div class="card">
+      <h3>Prove reproducibility from a clean checkout</h3>
+      <p class="controls">REPRO-1</p>
+      <ol><li>On a machine or CloudShell with no prior state: <code>git clone</code> the repo at tag <code>v1.0.0</code>.</li>
+      <li>Run <code>python3 scripts/render.py --check</code> and <code>python3 scripts/check_no_secrets.py</code>.</li>
+      <li>Fill the remaining <code>&lt;unset&gt;</code> values in <code>variables.json</code> (project ID, role name, workgroups) via PR once those resources exist; then <code>python3 scripts/render.py</code> and apply the rendered policies through console/CLI.</li>
+      <li><code>grep -rE "[0-9]{12}|arn:aws" --include=*.template.json .</code> must return nothing — literals belong in <code>variables.json</code> only.</li></ol>
+      <div class="chk"><b>Confirm:</b> the sandbox can be re-provisioned from the repo plus <code>variables.json</code> alone; no step depends on something in someone's head or clipboard.</div>
+    </div></div>
+
+    <div class="step"><div class="num">7</div><div class="card">
+      <h3>Run the pilot through PRs, and tag on meaningful change</h3>
+      <p class="controls">REVIEW-1 · versioning convention</p>
+      <table>
+        <tr><th style="width:80px;">Version</th><th>Trigger</th><th>Action</th></tr>
+        <tr><td class="k">v1.0.0</td><td>Initial pilot setup</td><td>Tag on first commit</td></tr>
+        <tr><td class="k">v1.x.x</td><td>Fixes, helper scripts, docs, variable changes</td><td>Patch via PR on <code>main</code></td></tr>
+        <tr><td class="k">v2.0.0</td><td>Schema change or major Glue job change</td><td>New tag <b>and</b> a DataZone asset revision → subscription approval (PII-1, Layer 5)</td></tr>
+      </table>
+      <div class="chk"><b>Confirm:</b> <code>git log --oneline</code> shows only merge commits on <code>main</code>; each policy change has a reviewer.</div>
+    </div></div>
+
+    <h2>What CI enforces on every PR</h2>
+    <table>
+      <tr><th style="width:230px;">Check</th><th>Fails when</th></tr>
+      <tr><td class="k">JSON parses</td><td>Any tracked <code>.json</code> is malformed.</td></tr>
+      <tr><td class="k"><code>render.py --check</code></td><td>A declared variable is missing; an undeclared one is added; a template references an unknown variable; a secret carries a <code>value</code>; a rendered policy is not valid JSON. Templates waiting on unset values are reported as <b>pending</b>, not failed.</td></tr>
+      <tr><td class="k"><code>check_no_secrets.py</code></td><td>Anything resembling an AWS key, GitHub PAT, private key, or password literal is committed.</td></tr>
+      <tr><td class="k"><code>main.json</code> immutability</td><td><code>main.json</code> differs from <code>main</code> and the PR lacks the <code>main-json-change</code> label.</td></tr>
+    </table>
+
+    <h2>Never commit</h2>
+    <ul>
+      <li>NPI data, sample rows, query results, or screenshots of either.</li>
+      <li>Credentials of any kind — including in a "variables" or "secrets" file, gitignored or not.</li>
+      <li>Rendered output (<code>rendered/</code>) — it contains resolved ARNs and is regenerated on demand.</li>
+      <li>Literal account IDs, ARNs, buckets, or regions inside a <code>.template.json</code>.</li>
+    </ul>
+
+    <h2>Verification checklist</h2>
+    <ul class="verify">
+      <li>☐ S3 versioning enabled before the V1 tag.</li>
+      <li>☐ Repo on GitHub with <code>v1.0.0</code>; <code>validate</code> workflow green.</li>
+      <li>☐ <code>main</code> protected: PR review + status check required; force-push and deletion blocked; CODEOWNERS handles set.</li>
+      <li>☐ SMUS GitHub connection healthy; PAT entered in SMUS only.</li>
+      <li>☐ DDL, Glue job, both IAM policies, LF record, blueprint record, bucket record all committed.</li>
+      <li>☐ Clean-checkout render check passes; no literals in templates.</li>
+      <li>☐ All changes since V1 are merge commits with review.</li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    <p class="footline">Internal Use Only | OnePoint BFG Wealth Partners</p>
+    <p class="disc">OnePoint BFG Wealth Partners ("OnePoint BFG") often uses Artificial Intelligence ("AI") in the generation of reports such as the above. OnePoint BFG and its employees are bound by all applicable Firm policies and procedures when using AI. AI is subject to risks and limitations. OnePoint BFG has established policies and procedures to ensure all AI generated material goes through human review prior to dissemination. For additional information regarding AI, please refer to OnePoint BFG's ADV 2A.</p>
+    <p class="fontflag">Brand fonts (Mixta Sharp / Graphie) require design-team application before any external distribution; Georgia and Arial are used here as fallbacks.</p>
+  </div>
+</div>
+</body>
+</html>

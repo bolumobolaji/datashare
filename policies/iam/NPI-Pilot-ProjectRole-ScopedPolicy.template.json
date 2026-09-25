@@ -1,0 +1,44 @@
+{
+  "_template": "Inline policy on the auto-created project role ${PROJECT_ROLE_NAME}. NOT on the admin execution policy. Verify SageMakerStudioProjectUserRolePermissionsBoundary is present on the role before attaching. Space-tag condition deferred for the pilot (see PII-1 runbook, Layer 3).",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "RestrictDataZoneToPilotDomainAndProject",
+      "Effect": "Allow",
+      "Action": [
+        "datazone:CreateSubscriptionRequest",
+        "datazone:GetSubscription",
+        "datazone:ListSubscriptions",
+        "datazone:DeleteSubscriptionRequest"
+      ],
+      "Resource": [
+        "arn:aws:datazone:${REGION}:${ACCOUNT_ID}:domain/${DOMAIN_ID}",
+        "arn:aws:datazone:${REGION}:${ACCOUNT_ID}:domain/${DOMAIN_ID}/project/${PROJECT_ID}"
+      ]
+    },
+    {
+      "Sid": "RestrictS3ToNPIPilotBucket",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:ListBucket"],
+      "Resource": ["arn:aws:s3:::${BUCKET}", "arn:aws:s3:::${BUCKET}/*"]
+    },
+    {
+      "Sid": "RestrictAthenaToNPIWorkgroup",
+      "Effect": "Allow",
+      "Action": ["athena:StartQueryExecution", "athena:GetQueryExecution", "athena:GetQueryResults"],
+      "Resource": "arn:aws:athena:${REGION}:${ACCOUNT_ID}:workgroup/${ATHENA_WORKGROUP}"
+    },
+    {
+      "Sid": "RestrictRedshiftToNPIWorkgroup",
+      "Effect": "Allow",
+      "Action": ["redshift-data:ExecuteStatement", "redshift-data:GetStatementResult"],
+      "Resource": "arn:aws:redshift-serverless:${REGION}:${ACCOUNT_ID}:workgroup/${REDSHIFT_WORKGROUP_ID}"
+    },
+    {
+      "Sid": "DenyAllOtherDataAccess",
+      "Effect": "Deny",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "NotResource": ["arn:aws:s3:::${BUCKET}", "arn:aws:s3:::${BUCKET}/*"]
+    }
+  ]
+}

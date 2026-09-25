@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PII-1 — NPI Access-Control Runbook</title>
+<style>
+  :root{
+    --steel:#01465A; --mandarin:#FF8500; --linen:#F5F4ED;
+    --graphite:#171A1F; --border:#01465A22; --steelsoft:#01465A0d;
+    --muted:#5c6672;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--linen);
+    color:var(--graphite);font-family:Arial,Helvetica,sans-serif;
+    font-size:13px;line-height:1.55;}
+  .page{max-width:8.5in;margin:18px auto;background:#fff;
+    box-shadow:0 1px 6px rgba(0,0,0,.08);}
+  .band{background:var(--steel);color:var(--linen);padding:20px 34px;}
+  .kicker{font-size:10px;letter-spacing:2px;text-transform:uppercase;
+    color:var(--mandarin);font-weight:bold;margin:0 0 6px;}
+  h1{font-family:Georgia,"Times New Roman",serif;font-weight:bold;
+    font-size:24px;margin:0;line-height:1.2;}
+  .sub{font-family:Georgia,serif;font-style:italic;font-size:14px;
+    color:#F5F4EDcc;margin:6px 0 0;}
+  .body{padding:22px 34px 8px;}
+  h2{font-family:Georgia,serif;color:var(--steel);font-size:15px;
+    font-weight:bold;margin:22px 0 8px;padding-bottom:5px;
+    border-bottom:2px solid var(--mandarin);}
+  h2:first-of-type{margin-top:4px;}
+  p{margin:0 0 10px;}
+  ul,ol{margin:0 0 10px;padding-left:18px;}
+  li{margin:0 0 5px;}
+  b,strong{color:var(--steel);}
+  code{font-family:"Courier New",monospace;font-size:11.5px;
+    background:var(--steelsoft);border:1px solid var(--border);
+    border-radius:3px;padding:0 3px;color:var(--steel);}
+  pre{font-family:"Courier New",monospace;font-size:10.5px;line-height:1.4;
+    background:var(--steelsoft);border:1px solid var(--border);border-radius:6px;
+    padding:9px 11px;margin:6px 0 8px;overflow-x:auto;white-space:pre;color:var(--graphite);}
+  .meta{display:flex;flex-wrap:wrap;gap:6px 20px;margin:2px 0 14px;
+    font-size:11.5px;color:var(--muted);}
+  .meta b{color:var(--steel);}
+  .callout{background:var(--steelsoft);border:1px solid var(--border);
+    border-left:3px solid var(--mandarin);border-radius:6px;
+    padding:10px 12px;margin:4px 0 14px;font-size:12px;}
+  .warn{background:#FFF6EC;border:1px solid #FF850044;border-left:3px solid var(--mandarin);
+    border-radius:6px;padding:9px 12px;margin:6px 0 10px;font-size:12px;}
+  .warn b{color:#A85400;}
+  .prereq{background:#fff;border:1px solid var(--border);border-radius:8px;
+    padding:12px 14px;margin:4px 0 16px;}
+  .prereq h4{font-family:Georgia,serif;color:var(--steel);margin:0 0 6px;font-size:13px;}
+  .step{display:grid;grid-template-columns:38px 1fr;gap:14px;margin:0 0 12px;}
+  .num{width:38px;height:38px;border-radius:50%;background:var(--steel);color:#fff;
+    font-family:Georgia,serif;font-weight:bold;font-size:17px;display:flex;
+    align-items:center;justify-content:center;}
+  .num.zero{background:var(--mandarin);}
+  .card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--steel);
+    border-radius:9px;padding:11px 14px;}
+  .card h3{margin:0 0 3px;font-size:14px;color:var(--steel);font-family:Georgia,serif;}
+  .card .controls{font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--mandarin);font-weight:bold;margin:0 0 7px;}
+  .card .do{margin:0 0 6px;}
+  .card ul,.card ol{margin:3px 0 6px;}
+  .chk{font-size:12px;color:var(--steel);background:var(--steelsoft);
+    border:1px solid var(--border);border-radius:6px;padding:6px 9px;margin-top:6px;}
+  .chk b{letter-spacing:.3px;}
+  table{width:100%;border-collapse:collapse;margin:2px 0 12px;font-size:12px;}
+  th{background:var(--steel);color:#fff;text-align:left;font-weight:bold;padding:7px 10px;}
+  td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tr:nth-child(even) td{background:var(--linen);}
+  td.k{white-space:nowrap;font-weight:bold;color:var(--steel);}
+  .verify li{margin-bottom:6px;}
+  .signoff{display:flex;flex-wrap:wrap;gap:18px;margin:8px 0 4px;}
+  .sigbox{flex:1 1 200px;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;}
+  .sigbox .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--mandarin);font-weight:bold;}
+  .sigline{border-bottom:1px solid var(--graphite);height:22px;margin-top:14px;}
+  .foot{padding:14px 34px 22px;border-top:1px solid var(--border);margin-top:14px;}
+  .footline{font-size:10.5px;font-weight:bold;letter-spacing:.6px;color:var(--steel);
+    text-transform:uppercase;margin-bottom:7px;}
+  .disc{font-size:8.5px;color:#171A1F99;line-height:1.5;margin:0 0 6px;}
+  .fontflag{font-size:8.5px;color:#171A1F99;line-height:1.5;margin:0;font-style:italic;}
+  @media print{
+    html,body{background:#fff;}
+    .page{box-shadow:none;margin:0;max-width:none;}
+    @page{size:letter;margin:0.6in;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="band">
+    <p class="kicker">OnePoint BFG Wealth Partners · Internal · Runbook</p>
+    <h1>PII-1 — NPI Access-Control Runbook</h1>
+    <p class="sub">Layered access controls for NPI data in the SageMaker Unified Studio sandbox</p>
+  </div>
+
+  <div class="body">
+    <div class="meta">
+      <span><b>Control:</b> PII-1 · Data Handling &amp; Reg S-P</span>
+      <span><b>Applies to:</b> Track A (V1) sandbox</span>
+      <span><b>Version:</b> 1.2 — updated 25 Sep 2026 (S3 access model and subscription-approver sequence added)</span>
+      <span><b>Domain:</b> IAM-based, <code>us-east-2</code></span>
+    </div>
+
+    <h2>Purpose &amp; principle</h2>
+    <p>This runbook stands up access controls for a sandbox that touches <b>NPI</b>. The principle is <b>defense in depth</b>: no single control is enough. Layer all five — a gate at the door, tags on the data, scoped policies, an isolated project, and a manual datashare gate. The core is <b>LF-Tags + identity</b>; the rest tie it together with least privilege.</p>
+    <div class="callout"><b>DO IT IN ORDER, STARTING AT STEP 0.</b> The first build pass lost time to region mismatches, a permissions-boundary deny, and blueprints that would not disable. Step 0 exists so those are settled before any control is configured. Do not load NPI until Step 5 and the verification checklist are complete.</div>
+
+    <div class="prereq">
+      <h4>Before you start</h4>
+      <ul>
+        <li>The approved pilot user list — phase 1 is <code>iam-bolu-mobolaji</code> (admin) and <code>iam-sandbox-bolu</code> (test user); four more users in phase 2.</li>
+        <li>The pilot IAM group <code>sandbox_datashare_pilot_group</code> — drives S3 bucket access and SMUS membership. <b>Not</b> usable as a Lake Formation principal (LF grants stay per user).</li>
+        <li>The test bucket <code>sandbox-datashare-test-bucket-test</code>, Block Public Access enabled (all four settings).</li>
+        <li>A <b>domain-admin session</b> — not a project-user role. See Step 0 for why.</li>
+        <li>Admin access to Lake Formation, IAM, and the SMUS domain, all in <code>us-east-2</code>.</li>
+        <li>The NPI datasets/tables identified, ready to tag.</li>
+        <li>A named <b>subscription approver</b> (B. Mobolaji) and <b>Compliance approvers</b> (M. Benhuri / K. Bedore).</li>
+        <li>Security / Arctic Wolf notified of the planned change (Step 0).</li>
+      </ul>
+    </div>
+
+    <h2>Step 0 — Environment prerequisites (new in v1.1)</h2>
+    <div class="step">
+      <div class="num zero">0</div>
+      <div class="card">
+        <h3>Get region, identity, and session right before touching controls</h3>
+        <p class="controls">Prevents the three failures that stalled the first pass</p>
+        <p class="do"><b>Do this:</b></p>
+        <ol>
+          <li><b>Co-locate the domain with the data.</b> The SMUS domain must be in the same region as S3, Redshift, and Glue — <code>us-east-2</code>. Region is fixed at domain creation and cannot be changed; cross-region breaks Lake Formation permissioning and adds transfer cost. A domain created in the wrong region is deleted and recreated, not fixed. Current domain: <code>dzd-ccfyu0e7eahzhl</code>, <code>us-east-2</code>.</li>
+          <li><b>Check IAM Identity Center before building.</b> Identity Center has <b>one home region per organization</b>. If it is unset or in a different region than the domain, the domain cannot add users (fails on <code>datazone:CreateGroupProfile</code>). This domain is IAM-based, so Identity Center is deferred to Track B — but confirm its region now so Track B's new domain lands correctly.</li>
+          <li><b>Use a domain-admin session, not the project execution role.</b> <code>AmazonSageMakerAdminIAMExecutionRole_1</code> carries the <code>SageMakerStudioProjectUserRolePermissionsBoundary</code>, which <b>explicitly denies</b> domain-level actions like adding users. Attaching a policy does not help — the boundary wins. <b>Do not remove the boundary</b>; log in with a proper admin identity instead.</li>
+          <li><b>Notify Security / Arctic Wolf first.</b> Domain creation spawns new IAM roles, an S3 bucket, and Glue/Lake Formation activity — all of which alert. Give a heads-up, document the expected roles, and log it as a planned change before clicking Create.</li>
+          <li><b>Leave "Make your data discoverable" unchecked</b> at domain creation. NPI must not be auto-catalogued before LF-Tag policies exist.</li>
+          <li><b>Record the portal URL</b> (form <code>https://dzd-&lt;id&gt;.sagemaker.us-east-2.on.aws</code>). SMUS-created domains are locked to the portal; the classic SageMaker console redirects with a validation error. Users cannot reach the project without this link.</li>
+        </ol>
+        <div class="chk"><b>Confirm:</b> domain and data are both in <code>us-east-2</code>; you are working from an admin session; Security has been notified; portal URL captured. Domain creation itself is free — costs start when Spaces run or data is queried.</div>
+      </div>
+    </div>
+
+    <h2>The five layers</h2>
+
+    <div class="step">
+      <div class="num">1</div>
+      <div class="card">
+        <h3>Identity — who can enter</h3>
+        <p class="controls">Controls: who can log into the domain</p>
+        <p class="do"><b>Do this:</b></p>
+        <ul>
+          <li><b>This domain is IAM-based</b>, so pilot users are individual IAM users, granted per person. Identity Center groups come with the new domain in Track B.</li>
+          <li>Before adding a user, attach <code>SageMakerStudioUserIamConsolePolicy</code> to the execution role. It is a <b>custom policy that already exists</b> in the account — attach it, do not recreate it.</li>
+          <li>Assign users with <code>SageMakerStudioUserIAMDefaultExecutionPolicy</code>. <b>Do not</b> use <code>SageMakerStudioUserIAMPermissiveExecutionPolicy</code> — it grants broad data access.</li>
+        </ul>
+        <div class="warn"><b>Open item — Track B, raise with Compliance.</b> All pilot users are on <code>SageMakerStudioUserIAMDefaultExecutionPolicy</code>, consistent with the approved model, and <b>none are admitted to the SMUS domain yet</b>. Separately, the group <code>sandbox_datashare_pilot_group</code> carries <code>SageMakerStudioAdminIAMDefaultExecutionPolicy</code> — a domain-admin policy attached at group level. That is inert until members are admitted to the domain, but once they are, the group grant would layer admin capability on top of their user policy. <b>Accepted for Track A</b> given the sandbox and known membership; carried to Track B as a Compliance review item with the Identity Center cutover, where the group grant should be reset to the User policy and admin reserved for the admin identity.</div>
+        <ul>
+          <li>Phase 1: <code>iam-bolu-mobolaji</code> (provisioning only) and <code>iam-sandbox-bolu</code> (working identity). Phase 2: the remaining four, after the environment is verified.</li>
+          <li><b>Membership is two steps, in two different UIs.</b> First add the user to the <b>domain</b> in the <b>Amazon DataZone console</b> (AWS Management Console → DataZone → Domains → <code>dzd-ccfyu0e7eahzhl</code>) — not the Unified Studio portal. Only once they are a domain member can they be added to the <b>project</b>, and that second step is done inside <b>Unified Studio</b>. Adding to the project first, or from the wrong UI, fails or the user does not appear as a candidate.</li>
+        </ul>
+        <div class="chk"><b>Confirm:</b> only phase-1 users exist; default (not permissive) policy attached; console policy attached to the execution role. This gate alone does not restrict data — continue to Step 2.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">2</div>
+      <div class="card">
+        <h3>Lake Formation LF-Tags — what data they can see</h3>
+        <p class="controls">Controls: which data assets are queryable · most critical layer</p>
+        <p class="do"><b>Do this, in four parts:</b></p>
+        <ol>
+          <li><b>Get the permission first.</b> Creating a tag as a non-admin fails with <em>Insufficient Lake Formation permission(s): Required Create LF Tag on Catalog</em>. Register <code>iam-bolu-mobolaji</code> as <b>Data Lake Administrator</b> under Lake Formation → Administration (or Permissions) → Administrative roles and tasks. On a never-configured account this is the welcome-screen "first data lake administrator" field. <b>An IAM policy alone is not sufficient</b> — the console registration is required as well.</li>
+          <li><b>Create the tags.</b> Permissions → LF-Tags and permissions → LF-Tags → Add LF-Tag: <code>data_class</code> (npi, standard), <code>environment</code> (pilot, prod), <code>sensitivity</code> (restricted, internal, public).</li>
+          <li><b>Assign at the database level.</b> Data Catalog → Databases → NPI database → Actions → Edit LF-Tags → <code>data_class=npi</code>, <code>sensitivity=restricted</code>. Tables and columns inherit.</li>
+          <li><b>Grant, then revoke.</b> Permissions → Data lake permissions → Grant. Principal type <b>IAM users and roles</b> (IAM user groups are <b>not supported</b> as LF principals). Resources matched by LF-Tags: <code>data_class=npi</code> AND <code>sensitivity=restricted</code>. Database: Describe. Table: Select, Describe. Then <b>revoke</b> any existing <code>SELECT</code> to <code>IAMAllowedPrincipals</code> or broad roles on the NPI database — they bypass the tag policy entirely.</li>
+        </ol>
+        <div class="chk"><b>Confirm:</b> <code>iam-sandbox-bolu</code> can query tagged tables; a non-pilot principal is denied; no <code>IAMAllowedPrincipals</code> grants remain on the NPI database. Enforcement holds at query time across Athena, Redshift, and Glue.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">3</div>
+      <div class="card">
+        <h3>IAM policies with conditions — how they can act</h3>
+        <p class="controls">Controls: which actions and resources are permitted</p>
+        <div class="warn"><b>Attach to the project role, not the admin policy.</b> The scoped policy goes on the auto-created project role (<code>AmazonSageMakerStudio-&lt;project-id&gt;-ProjectRole</code>), found under the project's settings in the SMUS portal. Never attach it to <code>SageMakerStudioAdminIAMDefaultExecutionPolicy</code>.</div>
+        <p class="do"><b>Do this:</b></p>
+        <ol>
+          <li><b>Verify the boundary first.</b> Open the project role in IAM → Permissions → Permissions boundary. <code>SageMakerStudioProjectUserRolePermissionsBoundary</code> must be listed. If it is absent, <b>stop</b> — the project was not provisioned correctly. The boundary caps what the role can ever do; the inline policy cannot exceed it.</li>
+          <li><b>Attach the scoped inline policy</b> (Add permissions → Create inline policy → JSON). Name it <code>NPI-Pilot-ProjectRole-ScopedPolicy</code>. Replace every placeholder — region is <code>us-east-2</code>:</li>
+        </ol>
+<pre>{ "Version": "2012-10-17", "Statement": [
+  { "Sid": "RestrictDataZoneToPilotDomainAndProject", "Effect": "Allow",
+    "Action": ["datazone:CreateSubscriptionRequest","datazone:GetSubscription",
+               "datazone:ListSubscriptions","datazone:DeleteSubscriptionRequest"],
+    "Resource": ["arn:aws:datazone:us-east-2:&lt;account-id&gt;:domain/&lt;domain-id&gt;",
+                 "arn:aws:datazone:us-east-2:&lt;account-id&gt;:domain/&lt;domain-id&gt;/project/&lt;project-id&gt;"] },
+  { "Sid": "RestrictS3ToNPIPilotBucket", "Effect": "Allow",
+    "Action": ["s3:GetObject","s3:PutObject","s3:ListBucket"],
+    "Resource": ["arn:aws:s3:::&lt;npi-pilot-bucket&gt;","arn:aws:s3:::&lt;npi-pilot-bucket&gt;/*"] },
+  { "Sid": "RestrictAthenaToNPIWorkgroup", "Effect": "Allow",
+    "Action": ["athena:StartQueryExecution","athena:GetQueryExecution","athena:GetQueryResults"],
+    "Resource": "arn:aws:athena:us-east-2:&lt;account-id&gt;:workgroup/&lt;npi-workgroup&gt;" },
+  { "Sid": "RestrictRedshiftToNPIWorkgroup", "Effect": "Allow",
+    "Action": ["redshift-data:ExecuteStatement","redshift-data:GetStatementResult"],
+    "Resource": "arn:aws:redshift-serverless:us-east-2:&lt;account-id&gt;:workgroup/&lt;pilot-workgroup-id&gt;" },
+  { "Sid": "DenyAllOtherDataAccess", "Effect": "Deny",
+    "Action": ["s3:GetObject","s3:PutObject"],
+    "NotResource": ["arn:aws:s3:::&lt;npi-pilot-bucket&gt;","arn:aws:s3:::&lt;npi-pilot-bucket&gt;/*"] }
+] }</pre>
+        <ol start="3">
+          <li><b>Space tagging is deferred for the pilot.</b> The <code>aws:ResourceTag</code> condition on SageMaker Spaces only works if Spaces are tagged, and tagging them from the console is not possible for SMUS domains (Spaces is greyed out in the SageMaker AI console; they live in the portal). It requires CLI: <code>aws sagemaker list-spaces --domain-id dzd-… --region us-east-2</code>, then <code>aws sagemaker add-tags</code> on the space ARN. Note the domain ID uses the <b><code>dzd-</code></b> prefix (DataZone), not <code>d-</code>. For five users, Layers 1–2 are the load-bearing controls; add the space condition when the pilot is stable.</li>
+          <li><b>Verify with the IAM Policy Simulator.</b> Select the project role. <code>s3:GetObject</code> on a non-pilot bucket → denied; on the pilot bucket → allowed; <code>datazone:CreateSubscriptionRequest</code> on another domain ARN → denied.</li>
+        </ol>
+        <div class="chk"><b>Confirm:</b> boundary present; inline policy attached to the project role; simulator results as above.</div>
+
+        <h3 style="margin-top:12px;">Test bucket access — decided model (Option A)</h3>
+        <p class="controls">Bucket: <code>sandbox-datashare-test-bucket-test</code> · where NPI first persists</p>
+        <p class="do"><b>Decision for Track A:</b> no bucket-policy Deny. Access is controlled by <b>Block Public Access + a group Allow policy</b>, so membership changes touch the group only, never the bucket.</p>
+        <ol>
+          <li><b>Block Public Access</b> — all four settings enabled on the bucket (done).</li>
+          <li><b>Group Allow policy</b> — inline policy <code>SandboxDataSharePilotBucketAccess</code> on <code>sandbox_datashare_pilot_group</code>: <code>s3:GetObject</code>, <code>s3:PutObject</code>, <code>s3:DeleteObject</code>, <code>s3:ListBucket</code> on the bucket and its objects (done).</li>
+          <li><b>Bucket policy left empty.</b> Anyone not in the group has no Allow and cannot reach the bucket.</li>
+        </ol>
+        <div class="warn"><b>Why not a Deny-except-named-roles bucket policy?</b> S3 bucket policies cannot reference IAM groups, and an explicit <code>Deny</code> with <code>ArnNotLike</code> beats any group Allow — so group members get blocked unless every user ARN is listed and kept in sync. Option A was chosen to avoid that. <b>Its guarantee depends on no broad S3 Allow existing elsewhere</b> (e.g. an <code>AdministratorAccess</code> group — <code>iam-bolu-mobolaji</code> sits in one). Inventory broad grants before phase 2. If a Deny is later wanted, use a principal-tag condition (<code>aws:PrincipalTag/PilotAccess</code>) rather than ARN lists.</div>
+        <div class="warn"><b>Consider trimming write/delete for non-builders.</b> The group policy grants <code>PutObject</code> and <code>DeleteObject</code> to every pilot member on the NPI snapshot bucket. Only the Glue job and the builder need to write; analysts and oversight roles need read. Consider a read-only variant for phase-2 users.</div>
+        <div class="chk"><b>Confirm:</b> Block Public Access on; group policy attached; bucket policy empty; a non-group principal is denied; broad-Allow inventory reviewed.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">4</div>
+      <div class="card">
+        <h3>SMUS project isolation — the sandbox boundary</h3>
+        <p class="controls">Controls: the environment boundary</p>
+        <div class="warn"><b>Role tags do not disable blueprints.</b> Setting <code>Enable…Permissions</code> tags on the execution role does <b>not</b> retroactively turn off blueprints that were auto-enabled at domain creation. Blueprints must be disabled by hand in the domain's Blueprints tab — both pages of it.</div>
+        <p class="do"><b>Do this:</b></p>
+        <ol>
+          <li>Use the existing <b>Admin project</b> — do not create another (fails with <em>Admin project already exists</em>). Create a <b>dedicated pilot project</b> for the sandbox; add only pilot users.</li>
+          <li><b>To add a member to the project:</b> (a) add them to the <b>domain</b> in the Amazon DataZone console (AWS Management Console → DataZone → Domains → <code>dzd-ccfyu0e7eahzhl</code> → Members); (b) then add them to the <b>project</b> from inside the Unified Studio portal. Domain membership is the prerequisite — a user not yet on the domain cannot be added to the project.</li>
+          <li>In the DataZone console → the domain → <b>Blueprints</b> tab (<code>…/datazone/home?region=us-east-2#/domains/dzd-ccfyu0e7eahzhl/capabilityblueprints</code>), select each unneeded blueprint and <b>Disable</b>, one at a time, then check page 2:</li>
+        </ol>
+        <table>
+          <tr><th style="width:170px;">Blueprint</th><th style="width:90px;">Track A</th><th>Why</th></tr>
+          <tr><td class="k">Tooling</td><td><b>Keep</b></td><td>Required — creates IAM roles, security groups, Athena workgroups. Do not touch.</td></tr>
+          <tr><td class="k">LakeHouseDatabase</td><td><b>Keep</b></td><td>Glue catalog / ETL for the snapshot job.</td></tr>
+          <tr><td class="k">LakehouseCatalog</td><td><b>Keep</b></td><td>Handles S3 and existing Redshift connections — the datashare path.</td></tr>
+          <tr><td class="k">EmrOnEc2 · EmrOnEks · EmrServerless</td><td>Disable</td><td>No Spark workloads in Track A.</td></tr>
+          <tr><td class="k">PartnerApps · Workflows</td><td>Disable</td><td>No partner apps; no MWAA / Airflow.</td></tr>
+          <tr><td class="k">RedshiftServerless</td><td>Disable</td><td>Only re-enable if a new Redshift Serverless workgroup must be created from inside SMUS; LakehouseCatalog covers the existing connection.</td></tr>
+          <tr><td class="k">QuickSight</td><td>Leave disabled</td><td>Already off.</td></tr>
+          <tr><td class="k">AmazonBedrockGenerativeAI · MLExperiments · MLflowApp</td><td><b>Reconcile</b></td><td>Not required for Track A and listed as <b>off</b> in the IT Security approval sheet. They were left enabled in the first pass — disable to match the approved scope, or update the approval sheet.</td></tr>
+        </table>
+        <div class="chk"><b>Confirm:</b> only Tooling, LakeHouseDatabase, and LakehouseCatalog show Enabled (plus Bedrock/ML only if the approval sheet is revised); pilot project membership is pilot users only.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">5</div>
+      <div class="card">
+        <h3>Datashare subscription approval — the Track A datashare path</h3>
+        <p class="controls">Controls: the manual gate for datashare access · <b>deferred until S3 versioning is enabled</b></p>
+        <p class="do"><b>Sequence (do in order once versioning is on):</b></p>
+        <ol>
+          <li><b>Enable S3 versioning</b> on <code>sandbox-datashare-test-bucket-test</code> → Properties → Bucket Versioning → Enable.</li>
+          <li><b>Publish the asset</b> in the DataZone portal: Projects → pilot project → Publish data → source S3 → the bucket → metadata → Publish.</li>
+          <li><b>Set the approver</b> on the published asset: Data Catalog → asset → Subscription tab → Edit → Approval type <b>Manual</b> → approver. Alternatively set once at <b>project level</b> (Projects → project → Settings → Subscription policy) so every asset inherits it.</li>
+          <li><b>Approver:</b> B. Mobolaji per the sandbox decision. Q suggested routing to <code>sandbox_datashare_pilot_group</code> instead — a group approver avoids a single-person bottleneck if the pilot grows; decide before phase 2.</li>
+          <li><b>Revisions:</b> each new S3 upload creates a version; publish a <b>new asset revision</b> in the portal, which raises a fresh subscription request for approval. Grants are on <b>views over the shared tables</b>, not the tables directly.</li>
+          <li><i>Optional, V1.5:</i> EventBridge rule on DataZone Asset Published → SNS to pilot emails. Alerting is out of scope for Track A; note it for the monitoring phase.</li>
+        </ol>
+        <div class="chk"><b>Confirm:</b> versioning on; asset published; approval type Manual with a named approver; a test subscription request requires approval; grants on views only.</div>
+      </div>
+    </div>
+
+    <h2>Gotchas from the first build pass</h2>
+    <table>
+      <tr><th style="width:230px;">Symptom</th><th>Cause → fix</th></tr>
+      <tr><td class="k">Insufficient LF permission: Create LF Tag on Catalog</td><td>Not a data lake admin → register in Lake Formation console (IAM policy alone insufficient).</td></tr>
+      <tr><td class="k">"Data lake permissions" not visible</td><td>Nav differs by console version — under Administration or Permissions; or you are on the welcome screen, which sets the first admin directly.</td></tr>
+      <tr><td class="k">Group not on the LF grant page</td><td>IAM user groups are unsupported as LF principals → grant per IAM user (Track A) or use Identity Center groups (Track B).</td></tr>
+      <tr><td class="k">Spaces greyed out in SageMaker console</td><td>SMUS spaces are managed from the portal → tag via CLI if needed; deferred for the pilot.</td></tr>
+      <tr><td class="k">Domain ID fails regex <code>^d-…</code></td><td>SMUS domains are DataZone-backed → IDs use <code>dzd-</code>; <code>list-domains</code> (hyphenated) will not show them; match by portal URL.</td></tr>
+      <tr><td class="k">Domain in the wrong region</td><td>Region is fixed at creation; cannot be moved → delete and recreate in <code>us-east-2</code> (safe only while no real data is loaded).</td></tr>
+      <tr><td class="k">Cannot add user — <code>datazone:CreateGroupProfile</code> denied</td><td>Explicit deny from the permissions boundary on the project execution role → use a domain-admin session; never remove the boundary.</td></tr>
+      <tr><td class="k">Policy <code>SageMakerStudioUserIamConsolePolicy</code> "does not exist" / "already exists"</td><td>It is a custom policy already in the account → attach it to the execution role; do not recreate.</td></tr>
+      <tr><td class="k">Blueprints still enabled after role tags</td><td>Tags do not retro-disable → disable manually in the Blueprints tab, both pages.</td></tr>
+      <tr><td class="k">"Admin project already exists"</td><td>Use the existing admin project; create a separate pilot project.</td></tr>
+      <tr><td class="k">User cannot be added to the project</td><td>They are not a domain member yet → add to the domain in the Amazon DataZone console (Domains → <code>dzd-ccfyu0e7eahzhl</code> → Members), then add to the project inside Unified Studio. Two steps, two UIs, in that order.</td></tr>
+      <tr><td class="k">Bucket Deny blocks pilot users despite the group Allow</td><td>Bucket policies cannot reference IAM groups, and explicit Deny + <code>ArnNotLike</code> wins over any Allow → either list every user ARN, use a principal-tag condition, or drop the Deny (Option A — chosen for Track A).</td></tr>
+      <tr><td class="k">Locked out of your own bucket</td><td>A Deny-except-named-roles policy omitted your identity → always run <code>aws sts get-caller-identity</code> and include your own ARN before saving a Deny. Moot under Option A.</td></tr>
+      <tr><td class="k">Subscription approver setting not found</td><td>It lives in the DataZone <b>portal</b>, not S3 or IAM — asset → Subscription tab, or project → Settings → Subscription policy.</td></tr>
+    </table>
+
+    <h2>Roles created by the domain — expected inventory</h2>
+    <p>These appeared when domain <code>dzd-ccfyu0e7eahzhl</code> was created. Share this list with Security / Arctic Wolf as the expected set, and use it as the allowlist if a bucket-policy Deny is ever reintroduced.</p>
+    <table>
+      <tr><th style="width:290px;">Role</th><th>Purpose</th></tr>
+      <tr><td class="k"><code>AmazonSageMakerManageAccess-us-east-2-dzd-ccfyu0e7eahzhl</code></td><td>Domain management role for the us-east-2 domain</td></tr>
+      <tr><td class="k"><code>datazone_usr_role_*</code> (two)</td><td>DataZone project user roles — one per project</td></tr>
+      <tr><td class="k"><code>AmazonSageMakerAdminIAMExecutionRole_1</code></td><td>Domain execution role (carries the project-user permissions boundary — see Step 0)</td></tr>
+      <tr><td class="k"><code>AmazonSageMakerUserIAMExecutionRole_*</code></td><td>SageMaker user execution role</td></tr>
+      <tr><td class="k"><code>AmazonSageMakerS3TablesRoleForLakeFormation</code></td><td>Lake Formation access to S3 Tables</td></tr>
+      <tr><td class="k"><code>GlueCrawlerRole</code></td><td>Glue crawler read access to the bucket</td></tr>
+    </table>
+
+    <h2>Quick reference — what each mechanism does</h2>
+    <table>
+      <tr><th style="width:190px;">Mechanism</th><th>Role in the NPI sandbox</th><th style="width:110px;">Enough alone?</th></tr>
+      <tr><td class="k">Identity (IAM users → IdC group)</td><td>Controls who can access the domain</td><td>No</td></tr>
+      <tr><td class="k">LF-Tags (Lake Formation)</td><td>Controls which data assets are visible / queryable</td><td>Closest, but needs identity</td></tr>
+      <tr><td class="k">IAM policies + conditions</td><td>Controls which actions and resources are permitted</td><td>No</td></tr>
+      <tr><td class="k">Project isolation + blueprints</td><td>Scopes the sandbox environment and capabilities</td><td>No</td></tr>
+      <tr><td class="k">Subscription approval</td><td>Manual gate for datashare access requests</td><td>No — a control point</td></tr>
+    </table>
+
+    <h2>Verification checklist (PII-1 pass criteria)</h2>
+    <ul class="verify">
+      <li>☐ Domain and data both in <code>us-east-2</code>; portal URL recorded; Security notified of domain creation.</li>
+      <li>☐ Phase-1 identities only; users on the User (not permissive) execution policy; console policy attached; no users admitted to the domain until Layers 2–4 are verified. (Group-level Admin policy noted — Track B Compliance item.)</li>
+      <li>☐ Data lake administrator registered; LF-Tags created; NPI database tagged <code>data_class=npi</code>, <code>sensitivity=restricted</code>.</li>
+      <li>☐ Per-user LF-Tag grants (SELECT / DESCRIBE) issued; <b>no <code>IAMAllowedPrincipals</code> grants remain</b> on the NPI database.</li>
+      <li>☐ Permissions boundary present on the project role; scoped inline policy attached; Policy Simulator results as specified.</li>
+      <li>☐ Test bucket: Block Public Access on; <code>SandboxDataSharePilotBucketAccess</code> on the group; bucket policy empty; broad-Allow inventory reviewed; non-group principal denied.</li>
+      <li>☐ Blueprints reduced to Tooling, LakeHouseDatabase, LakehouseCatalog (Bedrock/ML reconciled against the approval sheet).</li>
+      <li>☐ Dedicated pilot project; pilot members only — each added to the domain (DataZone console) before the project (Unified Studio).</li>
+      <li>☐ S3 versioning on; asset published; subscriptions on Manual approval with a named approver; grants on views only.</li>
+      <li>☐ Athena-results prefix restricted to the same group.</li>
+    </ul>
+
+    <h2>Sign-off</h2>
+    <p>Real (NPI) data is not loaded into the sandbox until every checklist item is complete and the sign-offs below are recorded. Suspected exposure is reported to Compliance immediately.</p>
+    <div class="signoff">
+      <div class="sigbox"><span class="lbl">Subscription approver</span><div class="sigline"></div><div style="margin-top:4px;color:var(--muted);">Name / date</div></div>
+      <div class="sigbox"><span class="lbl">Compliance approver</span><div class="sigline"></div><div style="margin-top:4px;color:var(--muted);">Name / date</div></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <p class="footline">Internal Use Only | OnePoint BFG Wealth Partners</p>
+    <p class="disc">OnePoint BFG Wealth Partners ("OnePoint BFG") often uses Artificial Intelligence ("AI") in the generation of reports such as the above. OnePoint BFG and its employees are bound by all applicable Firm policies and procedures when using AI. AI is subject to risks and limitations. OnePoint BFG has established policies and procedures to ensure all AI generated material goes through human review prior to dissemination. For additional information regarding AI, please refer to OnePoint BFG's ADV 2A.</p>
+    <p class="fontflag">Brand fonts (Mixta Sharp / Graphie) require design-team application before any external distribution; Georgia and Arial are used here as fallbacks.</p>
+  </div>
+</div>
+</body>
+</html>
