@@ -10,3 +10,5 @@ how NPI access is controlled has a commit and a reviewer.
 
 Runbooks change only via PR, like everything else. If a control changes in AWS, the runbook
 change lands in the same PR.
+
+Build history and open blockers live in `../build-log/` — one dated entry per build pass.

@@ -45,6 +45,7 @@ s3/bucket_config.md               bucket state record (Option A model)
 datazone/blueprints_config.md     blueprint enable/disable record
 docs/arn_conditions_reference.md  what conditions are actually in force
 docs/runbooks/                    PII-1 and VCS-1 runbooks, versioned with the code
+docs/build-log/                   dated build / incident entries (link these from Asana)
 ddl/views_v1.sql                  the five late-binding views
 glue/snapshot_job_v1.py           daily snapshot job (argument-driven, idempotent)
 .github/                          CI validate workflow, PR template

@@ -99,7 +99,7 @@
     <div class="meta">
       <span><b>Control:</b> PII-1 · Data Handling &amp; Reg S-P</span>
       <span><b>Applies to:</b> Track A (V1) sandbox</span>
-      <span><b>Version:</b> 1.2 — updated 25 Sep 2026 (S3 access model and subscription-approver sequence added)</span>
+      <span><b>Version:</b> 1.4 — updated 3 Oct 2026 (ETL build-pass gotchas; network posture noted for Track B)</span>
       <span><b>Domain:</b> IAM-based, <code>us-east-2</code></span>
     </div>
 
@@ -290,6 +290,18 @@
       <tr><td class="k">Bucket Deny blocks pilot users despite the group Allow</td><td>Bucket policies cannot reference IAM groups, and explicit Deny + <code>ArnNotLike</code> wins over any Allow → either list every user ARN, use a principal-tag condition, or drop the Deny (Option A — chosen for Track A).</td></tr>
       <tr><td class="k">Locked out of your own bucket</td><td>A Deny-except-named-roles policy omitted your identity → always run <code>aws sts get-caller-identity</code> and include your own ARN before saving a Deny. Moot under Option A.</td></tr>
       <tr><td class="k">Subscription approver setting not found</td><td>It lives in the DataZone <b>portal</b>, not S3 or IAM — asset → Subscription tab, or project → Settings → Subscription policy.</td></tr>
+      <tr><td class="k">SMUS Redshift connection falls back to password auth / <code>GetCredentials</code> denied</td><td>IAM auth from SMUS requires <code>AmazonDataZoneProject</code> and <code>for-use-with-all-datazone-projects</code> tags on the target workgroup <b>and</b> namespace; the Redshift Serverless blueprint must be enabled. Tag the <b>sandbox</b> namespace/workgroup — never the production one. <i>Note: tags were applied to <code>sandbox-datashare-test-*</code> on 3 Oct 2026 and the SMUS connection <b>still failed</b> — tags are necessary but were not sufficient; open with Support.</i></td></tr>
+      <tr><td class="k">Provisioning role denied <code>secretsmanager:DescribeSecret</code></td><td>SMUS-created connection secrets must carry <code>AmazonDataZoneProject</code> and <code>CreatedBy=AmazonDataZone</code> tags; untagged secrets fail the policy condition and may not list.</td></tr>
+      <tr><td class="k">"Publicly accessible consumer cannot access object"</td><td>Datashare federation is blocked on a publicly accessible workgroup → consume on a workgroup with public access <b>off</b>.</td></tr>
+      <tr><td class="k">Cannot add a second workgroup to a namespace</td><td>Redshift Serverless is strictly 1:1 namespace↔workgroup → a new consumer needs a new namespace, and the datashare must be re-granted to it (<code>GRANT USAGE ON DATASHARE … TO NAMESPACE</code>), then <code>CREATE DATABASE … FROM DATASHARE</code>. <code>CREATE DATABASE</code> may need <code>ALTER USER admin CREATEDB</code>.</td></tr>
+      <tr><td class="k">Notebook: <code>Network is unreachable</code> / timeout to <code>datazone.&lt;region&gt;.api.aws</code></td><td>Studio domains are VpcOnly → interface endpoints required in the project VPC with private DNS: <code>datazone</code>, <code>sagemaker.api</code>, <code>sagemaker.runtime</code>, <code>sagemaker.studio</code>, <code>sts</code>, <code>s3</code>, <code>glue</code>, <code>logs</code>; SG attached to private + shared spaces; delete/recreate the space after network changes. Note: interface endpoints bill hourly.</td></tr>
+      <tr><td class="k">Error references the wrong domain / region</td><td>Launched from the wrong portal URL → always open the notebook from the us-east-2 portal (<code>dzd-ccfyu0e7eahzhl</code>).</td></tr>
+      <tr><td class="k"><code>%idle_timeout</code> not found / no PySpark kernel</td><td>Spark magics need a Glue or EMR Serverless session. The project's <code>serverless.spark</code> connection has no backing app by default → create an EMR Serverless application in the same VPC/subnets/SG. Linking it to the default connection and kernel credential resolution remain <b>open with AWS Support</b> (build log 2026-10-03).</td></tr>
+      <tr><td class="k">"Admin project already exists" (reprise) / Query Editor v2 does not list the new workgroup</td><td>Create the consumer database from the namespace console UI instead; the datashare mounts automatically. Root cause not diagnosed.</td></tr>
+      <tr><td class="k">Boundary errors persist after tagging the role</td><td>Check tag <b>values</b>, not just keys — <code>AmazonDataZoneDomain</code> must be the full ID with the <code>dzd-</code> prefix. A role must also be <b>added as a domain user and Activated</b> (DataZone console → User management), then added as a project member.</td></tr>
+      <tr><td class="k">JupyterLab: "Network issue detected… public subnet"</td><td>The Studio domain sits on default public subnets → IDE is blocked. Workarounds for Track A: SMUS Query Editor (Data analytics) + <code>UNLOAD</code>, Code Editor, or a presigned URL. The private-subnet migration (also moves the Redshift workgroup and turns off public access) is <b>Track B</b>.</td></tr>
+      <tr><td class="k">Connection access role rejected by ARN regex</td><td>Access-role ARNs cannot carry a <code>/service-role/</code> path. And never set the access role to the connection's own executing role — it tries to assume itself (<code>sts:AssumeRole</code> 403). For the project connection, <b>leave Access role blank</b> and use IAM authentication.</td></tr>
+      <tr><td class="k">Redshift falls back to password auth for an IAM identity</td><td>IAM-mapped database users need the prefix — <code>IAMR:&lt;role&gt;</code> or <code>IAMU:&lt;user&gt;</code>; a bare username forces password auth.</td></tr>
     </table>
 
     <h2>Roles created by the domain — expected inventory</h2>
@@ -301,7 +313,8 @@
       <tr><td class="k"><code>AmazonSageMakerAdminIAMExecutionRole_1</code></td><td>Domain execution role (carries the project-user permissions boundary — see Step 0)</td></tr>
       <tr><td class="k"><code>AmazonSageMakerUserIAMExecutionRole_*</code></td><td>SageMaker user execution role</td></tr>
       <tr><td class="k"><code>AmazonSageMakerS3TablesRoleForLakeFormation</code></td><td>Lake Formation access to S3 Tables</td></tr>
-      <tr><td class="k"><code>GlueCrawlerRole</code></td><td>Glue crawler read access to the bucket</td></tr>
+      <tr><td class="k"><code>GlueCrawlerRole</code></td><td>Glue crawler read access to the bucket. <b>Now also</b> holds write on the NPI bucket and <code>redshift-serverless:GetCredentials</code> (added for the notebook job) — not yet on the approval sheet.</td></tr>
+      <tr><td class="k"><code>Redshift-S3-Access</code></td><td>Attached to the sandbox consumer namespace; broadened with bucket write for the unload — not yet on the approval sheet.</td></tr>
     </table>
 
     <h2>Quick reference — what each mechanism does</h2>
