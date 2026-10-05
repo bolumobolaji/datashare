@@ -1,6 +1,6 @@
 # Build log — SMUS notebook ETL blocker
 
-**Date:** 2026-10-03 · **Track:** A (V1) · **Domain:** `dzd-ccfyu0e7eahzhl` (us-east-2) · **Studio domain:** `d-qtea8valgu8b`
+**Date:** 2026-10-02 · **Track:** A (V1) · **Domain:** `dzd-ccfyu0e7eahzhl` (us-east-2) · **Studio domain:** `d-qtea8valgu8b`
 **Status:** BLOCKED — AWS Support case open (System impaired)
 
 ## Goal
