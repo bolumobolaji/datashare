@@ -39,7 +39,9 @@
     "LF_TAG_ENVIRONMENT":       { "description": "LF-Tag value for environment.", "secret": false },
     "LF_TAG_SENSITIVITY":       { "description": "LF-Tag value for sensitivity.", "secret": false },
     "GITHUB_REPO":              { "description": "org/repo for the SMUS GitHub connection.", "secret": false },
-    "GITHUB_BRANCH":            { "description": "Default branch.", "secret": false }
+    "GITHUB_BRANCH":            { "description": "Default branch.", "secret": false },
+    "EMR_SERVERLESS_APP_ID":    { "description": "EMR Serverless application backing the project's serverless.spark connection (Spark kernel prerequisite).", "secret": false },
+    "CONSUMER_NAMESPACE":       { "description": "Sandbox Redshift Serverless consumer namespace (datashare granted here, not production).", "secret": false }
   },
 
   "secrets": {

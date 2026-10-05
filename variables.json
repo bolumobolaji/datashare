@@ -6,13 +6,13 @@
     "ACCOUNT_ID":            "908027375495",
     "REGION":                "us-east-2",
     "DOMAIN_ID":             "dzd-ccfyu0e7eahzhl",
-    "PROJECT_ID":            "<set after pilot project is created>",
-    "PROJECT_ROLE_NAME":     "<AmazonSageMakerStudio-PROJECT_ID-ProjectRole — set after project creation>",
+    "PROJECT_ID":            "di4muxhv53wbvt",
+    "PROJECT_ROLE_NAME":     "datazone_usr_role_di4muxhv53wbvt_48rtbx1rft5fhl",
     "BUCKET":                "sandbox-datashare-test-bucket-test",
     "SNAPSHOT_PREFIX":       "orion_sandbox/snapshots",
     "GLUE_DATABASE":         "orion_sandbox_snapshots",
     "ATHENA_WORKGROUP":      "<set when the sandbox workgroup is created>",
-    "REDSHIFT_WORKGROUP_ID": "<set when the consumer workgroup is known>",
+    "REDSHIFT_WORKGROUP_ID": "sandbox-datashare-test-workgroup-test",
     "PILOT_GROUP":           "sandbox_datashare_pilot_group",
     "ADMIN_USER":            "iam-bolu-mobolaji",
     "TEST_USER":             "iam-sandbox-bolu",
@@ -22,7 +22,9 @@
     "LF_TAG_ENVIRONMENT":    "pilot",
     "LF_TAG_SENSITIVITY":    "restricted",
     "GITHUB_REPO":           "bolumobolaji/datashare",
-    "GITHUB_BRANCH":         "main"
+    "GITHUB_BRANCH":         "main",
+    "EMR_SERVERLESS_APP_ID": "00g97qv2dmfsjj0d",
+    "CONSUMER_NAMESPACE":    "sandbox-datashare-test-namespace-test"
   },
 
   "secrets": {
